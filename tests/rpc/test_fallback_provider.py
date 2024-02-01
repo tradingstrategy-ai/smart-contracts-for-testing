@@ -327,3 +327,29 @@ def test_broadcast_and_wait_multiple_nonce_too_high(web3: Web3, deployer: str):
             node_switch_timeout=datetime.timedelta(seconds=1),
             check_nonce_validity=True,
         )
+
+
+def test_get_fallback_provider_diagnosics(web3, fallback_provider: FallbackProvider, deployer):
+    """Get diagnostics output."""
+
+    web3.eth.set_gas_price_strategy(node_default_gas_price_strategy)
+
+    # Fill in user wallet
+    tx1_hash = web3.eth.send_transaction({"from": deployer, "to": deployer, "value": 5 * 10**18})
+    assert_transaction_success_with_explanation(web3, tx1_hash)
+
+    diagnostics = fallback_provider.get_diagnostics_info()
+
+    assert len(diagnostics) == 2
+
+    fallback1 = diagnostics[0]
+    assert fallback1["active"] == True
+    assert fallback1["last_call"] is not None
+    assert fallback1["call_count"] == 10
+    assert fallback1["retry_count"] == 0
+    assert fallback1["last_block_number"] == 1
+    assert fallback1["last_block_error"] is None
+
+    fallback2 = diagnostics[1]
+    assert fallback2["last_call"] is None
+    assert fallback1["last_block_number"] == 1
