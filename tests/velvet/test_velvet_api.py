@@ -54,7 +54,6 @@ def anvil_base_fork(request, vault_owner, usdc_holder, deposit_user) -> AnvilLau
     launch = fork_network_anvil(
         JSON_RPC_BASE,
         unlocked_addresses=[vault_owner, usdc_holder, deposit_user],
-        fork_block_number=23261311,
     )
     try:
         yield launch
@@ -86,7 +85,10 @@ def web3(anvil_base_fork) -> Web3:
             make_anvil_custom_rpc_request(web3, "evm_revert", [snapshot])
     else:
         # Anvil
-        web3 = create_multi_provider_web3(anvil_base_fork.json_rpc_url)
+        web3 = create_multi_provider_web3(
+            anvil_base_fork.json_rpc_url,
+            default_http_timeout=(3, 45),
+        )
         assert web3.eth.chain_id == 8453
         yield web3
 
