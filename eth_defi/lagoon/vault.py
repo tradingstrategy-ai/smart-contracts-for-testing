@@ -149,15 +149,6 @@ class LagoonVault(VaultBase):
 
     @cached_property
     def vault_contract(self) -> Contract:
-        """Get vault deployment."""
-        return get_deployed_contract(
-            self.web3,
-            "lagoon/Vault.json",
-            self.spec.vault_address,
-        )
-
-    @cached_property
-    def vault_contract(self) -> Contract:
         """Underlying Vault smart contract."""
         return get_deployed_contract(
             self.web3,
@@ -206,7 +197,7 @@ class LagoonVault(VaultBase):
             See :py:class:`LagoonVaultInfo`
         """
         vault_info = self.fetch_vault_info()
-        safe = self.fetch_safe(vault_info['safe'])
+        safe = self.fetch_safe(vault_info["safe"])
         safe_info_dict = asdict(safe.retrieve_all_info())
         del safe_info_dict["address"]  # Key conflict
         return vault_info | safe_info_dict
@@ -234,7 +225,6 @@ class LagoonVault(VaultBase):
         """
         raw_amount = self.vault_contract.functions.totalAssets().call(block_identifier=block_identifier)
         return self.underlying_token.convert_to_decimals(raw_amount)
-
 
     def fetch_total_supply(self, block_identifier: BlockIdentifier) -> Decimal:
         """What is the current outstanding shares.
@@ -634,11 +624,3 @@ class LagoonFlowManager(VaultFlowManager):
         shares_pending = self.fetch_pending_redemption(block_identifier)
         share_price = self.vault.fetch_share_price(block_identifier)
         return shares_pending * share_price
-
-
-
-
-
-
-
-
