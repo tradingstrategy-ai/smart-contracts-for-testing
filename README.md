@@ -99,6 +99,8 @@ pip install "web3-ethereum-defi[data]"
 
 With `poetry`:
 
+**N.B.** Currently poetry version `1.8.5` works perfectly. Poetry `>= 2` will be stuck in an infinite loop 
+
 ```shell
 # Poetry version
 poetry add -E data web3-ethereum-defi
